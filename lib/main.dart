@@ -50,16 +50,16 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  void tryMakingMove({required ShortMove move}) {
-    final success = _chess.move(<String, String?>{
-      'from': move.from,
-      'to': move.to,
-      'promotion': move.promotion.toNullable()?.name,
-    });
+  void MakeMove({required ShortMove move}) {
+    print(move.from);
+    //print(_chess.board[123]?.type);
 
-    setState(() {
-      _lastMoveArrowCoordinates = BoardArrow(from: move.from, to: move.to);
-    });
+    print(chesslib.Chess.SQUARES[move.from]);
+    int intfrom = chesslib.Chess.SQUARES[move.from];
+    int intto = chesslib.Chess.SQUARES[move.to];
+    _chess.board[intto] = _chess.board[intfrom];
+    _chess.board[intfrom] = null;
+    setState(() {});
   }
 
   Future<PieceType?> handlePromotion(BuildContext context) {
@@ -116,13 +116,16 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: SimpleChessBoard(
-          chessBoardColors: _boardColors,
           engineThinking: false,
           fen: _chess.fen,
-          onMove: tryMakingMove,
-          orientation: boardOrientation,
+          onMove: ({required ShortMove move}) {
+            print('${move.from}|${move.to}|${move.promotion}');
+            MakeMove(move: move);
+          },
+          orientation: BoardColor.white,
+          chessBoardColors: _boardColors,
           whitePlayerType: PlayerType.human,
-          blackPlayerType: PlayerType.human,
+          blackPlayerType: PlayerType.computer,
           lastMoveToHighlight: _lastMoveArrowCoordinates,
           onPromote: () => handlePromotion(context),
           onPromotionCommited: ({required ShortMove moveDone}) =>
