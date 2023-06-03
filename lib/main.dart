@@ -171,10 +171,11 @@ class _MyHomePageState extends State<MyHomePage> {
               // then check real move
               print("shacl accepts!");
             } else {
+              // make butten to go back maybe
               print("this move violates a shacl rule, undoing move");
               fake_undo();
             }
-            // make floating button to validate move
+            // make floating button to validate move, board and last 3 moves
             // if pressed: undo fake move, do real move with chesslib
           },
           orientation: BoardColor.white,
@@ -186,6 +187,14 @@ class _MyHomePageState extends State<MyHomePage> {
           onPromotionCommited: ({required ShortMove moveDone}) =>
               {print(moveDone)},
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        label: const Text('Approve'),
+        icon: const Icon(Icons.thumb_up),
+        backgroundColor: Colors.pink,
       ),
     );
   }
