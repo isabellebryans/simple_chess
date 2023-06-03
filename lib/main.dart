@@ -67,6 +67,20 @@ class _MyHomePageState extends State<MyHomePage> {
     return true;
   }
 
+  void change_turn() {
+    setState(() {
+      _chess.turn = _chess.turn == chesslib.Color.WHITE
+          ? chesslib.Color.BLACK
+          : chesslib.Color.WHITE;
+    });
+  }
+
+// reset fen
+  void fake_undo() {
+    currentFen = prevFen;
+    _chess.load(currentFen);
+  }
+
   void FakeMove({required ShortMove move}) {
     print(move.from);
     //print(_chess.board[123]?.type);
@@ -78,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _chess.board[intto] = _chess.board[intfrom];
     _chess.board[intfrom] = null;
     //currentFen = _chess.generate_fen();
-    print(currentFen);
+    prevFen = currentFen;
     currentFen = generate_my_fen(_chess.board, _chess.castling, _chess.turn,
         _chess.ep_square, _chess.half_moves, _chess.move_number);
     print(currentFen);
@@ -118,6 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+// implement button to validate last 3 moves with shacl
   @override
   Widget build(BuildContext context) {
     final boardOrientation =
@@ -143,16 +158,21 @@ class _MyHomePageState extends State<MyHomePage> {
           fen: currentFen,
           onMove: ({required ShortMove move}) {
             print('${move.from}|${move.to}|${move.promotion}');
+            change_turn();
+            print(_chess.turn);
             // save previous fen
             saveFen(currentFen);
             // make fake move
             // change fen
             FakeMove(move: move);
-            // check if shacl allows
+            // validate single move with shacl
             if (check_shacl(move: move)) {
               // shacl accepts it
               // then check real move
               print("shacl accepts!");
+            } else {
+              print("this move violates a shacl rule, undoing move");
+              fake_undo();
             }
             // make floating button to validate move
             // if pressed: undo fake move, do real move with chesslib
