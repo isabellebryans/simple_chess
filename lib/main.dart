@@ -10,6 +10,7 @@ void main() {
 
 late String prevFen;
 late String currentFen;
+late ShortMove most_recent_move;
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -63,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void update_fen() {}
 
-  bool check_shacl({required ShortMove move}) {
+  bool check_shacl(ShortMove move, String fen) {
     return true;
   }
 
@@ -81,22 +82,53 @@ class _MyHomePageState extends State<MyHomePage> {
     _chess.load(currentFen);
   }
 
-  void FakeMove({required ShortMove move}) {
-    print(move.from);
-    //print(_chess.board[123]?.type);
-    //update fen
-
-    print(chesslib.Chess.SQUARES[move.from]);
+  void move_made({required ShortMove move}) {
+    // first save the fen
+    saveFen(_chess.fen);
+    // make temp move for shacl
     int intfrom = chesslib.Chess.SQUARES[move.from];
     int intto = chesslib.Chess.SQUARES[move.to];
     _chess.board[intto] = _chess.board[intfrom];
     _chess.board[intfrom] = null;
-    //currentFen = _chess.generate_fen();
-    prevFen = currentFen;
-    currentFen = generate_my_fen(_chess.board, _chess.castling, _chess.turn,
-        _chess.ep_square, _chess.half_moves, _chess.move_number);
-    print(currentFen);
-    setState(() {});
+    change_turn();
+    // now chess board has wrong fen
+
+    // verify this fen and move in shacl
+    if (check_shacl(move, _chess.fen)) {
+      print("shacl approves");
+    } else {
+      print("shacl disapproves");
+    }
+    // show move made regardless of shacl approval
+    setState(() {
+      currentFen = _chess.fen;
+    });
+
+    // ideally set state here and wait a bit
+
+    // reset chess board
+    _chess.load(prevFen);
+
+    // properly try chess move
+    final success = _chess.move(<String, String?>{
+      'from': move.from,
+      'to': move.to,
+      'promotion': move.promotion.toNullable()?.name,
+    });
+    if (success) {
+      //change_turn();
+      print("Valid move");
+
+      setState(() {});
+    } else {
+      print("invalid move");
+      setState(() {
+        currentFen = _chess.fen;
+      });
+    }
+
+    // reset app, showing move if it was valid
+    //setState(() {});
   }
 
   Future<PieceType?> handlePromotion(BuildContext context) {
@@ -152,49 +184,39 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: Center(
-        child: SimpleChessBoard(
-          engineThinking: false,
-          fen: currentFen,
-          onMove: ({required ShortMove move}) {
-            print('${move.from}|${move.to}|${move.promotion}');
-            change_turn();
-            print(_chess.turn);
-            // save previous fen
-            saveFen(currentFen);
-            // make fake move
-            // change fen
-            FakeMove(move: move);
-            // validate single move with shacl
-            if (check_shacl(move: move)) {
-              // shacl accepts it
-              // then check real move
-              print("shacl accepts!");
-            } else {
-              // make butten to go back maybe
-              print("this move violates a shacl rule, undoing move");
-              fake_undo();
-            }
-            // make floating button to validate move, board and last 3 moves
-            // if pressed: undo fake move, do real move with chesslib
-          },
-          orientation: BoardColor.white,
-          chessBoardColors: _boardColors,
-          whitePlayerType: PlayerType.human,
-          blackPlayerType: PlayerType.human,
-          lastMoveToHighlight: _lastMoveArrowCoordinates,
-          onPromote: () => handlePromotion(context),
-          onPromotionCommited: ({required ShortMove moveDone}) =>
-              {print(moveDone)},
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Add your onPressed code here!
-        },
-        label: const Text('Approve'),
-        icon: const Icon(Icons.thumb_up),
-        backgroundColor: Colors.pink,
+      body: Row(
+        children: [
+          Center(
+            child: SimpleChessBoard(
+              engineThinking: false,
+              fen: currentFen,
+              onMove: ({required ShortMove move}) {
+                print('${move.from}|${move.to}|${move.promotion}');
+                move_made(move: move);
+                // make floating button to validate move, board and last 3 moves
+                // if pressed: undo fake move, do real move with chesslib
+              },
+              orientation: BoardColor.white,
+              chessBoardColors: _boardColors,
+              whitePlayerType: PlayerType.human,
+              blackPlayerType: PlayerType.human,
+              lastMoveToHighlight: _lastMoveArrowCoordinates,
+              onPromote: () => handlePromotion(context),
+              onPromotionCommited: ({required ShortMove moveDone}) =>
+                  {print(moveDone)},
+            ),
+          ),
+          Expanded(
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                // Add your onPressed code here!
+              },
+              label: const Text('Validate Move'),
+              icon: const Icon(Icons.thumb_up),
+              backgroundColor: Colors.pink,
+            ),
+          ),
+        ],
       ),
     );
   }
