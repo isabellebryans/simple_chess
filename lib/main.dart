@@ -219,8 +219,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Add your onPressed code here!#
                 //print(fetchSHACLResults());
               },
-              label: const Text('Echeque et mate!!!!!'),
-              icon: const Icon(Icons.thumb_down),
+              label: const Text('Validate move'),
+              icon: const Icon(Icons.thumb_up),
               backgroundColor: Colors.orange,
             ),
           ),
