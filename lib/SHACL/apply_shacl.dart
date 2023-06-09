@@ -4,8 +4,12 @@ import 'dart:convert';
 import 'package:xml2json/xml2json.dart';
 import 'package:simple_chess/SHACL/SHACLResults.dart';
 import 'package:simple_chess_board/models/short_move.dart';
+import 'package:chess/chess.dart' as chesslib;
 
-Future<String> fetchSHACLResults(ShortMove move) async {
+Future<String> fetchSHACLResults(
+  ShortMove move,
+  chesslib.Piece? captured_piece,
+) async {
   /* final response2 = await http.post(
     Uri.parse('http://localhost:3000/updateBoard'),
     headers: <String, String>{

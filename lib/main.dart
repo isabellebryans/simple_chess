@@ -65,10 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void update_fen() {}
 
-  bool check_shacl(ShortMove move, String fen) {
-    fetchSHACLResults(
-      move,
-    );
+  bool check_shacl(ShortMove move, String fen, chesslib.Piece? captured_piece) {
+    fetchSHACLResults(move, captured_piece);
     return true;
   }
 
@@ -101,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // now chess board has wrong fen
 
     // verify this fen and move in shacl
-    if (check_shacl(move, _chess.fen)) {
+    if (check_shacl(move, _chess.fen, captured)) {
       print("shacl approves");
     } else {
       print("shacl disapproves");
@@ -128,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {});
     } else {
       print("invalid move");
-      Future.delayed(const Duration(milliseconds: 1000), () {
+      Future.delayed(const Duration(milliseconds: 5000), () {
         setState(() {
           // Here you can write your code for open new view
           currentFen = _chess.fen;
