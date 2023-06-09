@@ -3,7 +3,7 @@ import 'package:simple_chess/my_chess.dart';
 import 'package:simple_chess_board/models/board_arrow.dart';
 import 'package:chess/chess.dart' as chesslib;
 import 'package:simple_chess_board/simple_chess_board.dart';
-import 'package:simple_chess/apply_shacl.dart';
+import 'package:simple_chess/SHACL/apply_shacl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -66,6 +66,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void update_fen() {}
 
   bool check_shacl(ShortMove move, String fen) {
+    fetchSHACLResults(
+      move,
+    );
     return true;
   }
 
@@ -89,6 +92,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // make temp move for shacl
     int intfrom = chesslib.Chess.SQUARES[move.from];
     int intto = chesslib.Chess.SQUARES[move.to];
+    // if piece is in the to position, it would be caputered
+    chesslib.Piece? captured = _chess.board[intto];
+
     _chess.board[intto] = _chess.board[intfrom];
     _chess.board[intfrom] = null;
     change_turn();
@@ -110,7 +116,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // reset chess board
     _chess.load(prevFen);
 
-    // properly try chess move
     final success = _chess.move(<String, String?>{
       'from': move.from,
       'to': move.to,
@@ -123,8 +128,11 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {});
     } else {
       print("invalid move");
-      setState(() {
-        currentFen = _chess.fen;
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        setState(() {
+          // Here you can write your code for open new view
+          currentFen = _chess.fen;
+        });
       });
     }
 
@@ -211,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton.extended(
               onPressed: () {
                 // Add your onPressed code here!#
-                print(fetchAlbum());
+                //print(fetchSHACLResults());
               },
               label: const Text('Echeque et mate!!!!!'),
               icon: const Icon(Icons.thumb_down),

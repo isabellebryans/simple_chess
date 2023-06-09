@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:xml2json/xml2json.dart';
+import 'package:simple_chess/SHACL/SHACLResults.dart';
+import 'package:simple_chess_board/models/short_move.dart';
 
-Future<String> fetchAlbum() async {
+Future<String> fetchSHACLResults(ShortMove move) async {
   /* final response2 = await http.post(
     Uri.parse('http://localhost:3000/updateBoard'),
     headers: <String, String>{
@@ -45,25 +48,5 @@ Future<String> fetchAlbum() async {
     // If the server did not return a 200 OK response,
     // then throw an exception.
     throw Exception('Failed to load album');
-  }
-}
-
-class Album {
-  final int userId;
-  final int id;
-  final String title;
-
-  const Album({
-    required this.userId,
-    required this.id,
-    required this.title,
-  });
-
-  factory Album.fromJson(Map<String, dynamic> json) {
-    return Album(
-      userId: json['userId'],
-      id: json['id'],
-      title: json['title'],
-    );
   }
 }
