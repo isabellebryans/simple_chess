@@ -3,6 +3,7 @@ import 'package:simple_chess/my_chess.dart';
 import 'package:simple_chess_board/models/board_arrow.dart';
 import 'package:chess/chess.dart' as chesslib;
 import 'package:simple_chess_board/simple_chess_board.dart';
+import 'package:simple_chess/apply_shacl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -209,11 +210,12 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
             child: FloatingActionButton.extended(
               onPressed: () {
-                // Add your onPressed code here!
+                // Add your onPressed code here!#
+                print(fetchAlbum());
               },
-              label: const Text('Validate Move'),
-              icon: const Icon(Icons.thumb_up),
-              backgroundColor: Colors.pink,
+              label: const Text('Echeque et mate!!!!!'),
+              icon: const Icon(Icons.thumb_down),
+              backgroundColor: Colors.orange,
             ),
           ),
         ],
