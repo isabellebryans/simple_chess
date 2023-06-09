@@ -7,9 +7,9 @@ import 'package:simple_chess_board/models/short_move.dart';
 import 'package:chess/chess.dart' as chesslib;
 
 Future<String> fetchSHACLResults(
-  ShortMove move,
-  chesslib.Piece? captured_piece,
-) async {
+    ShortMove move, chesslib.Piece? captured_piece) async {
+  // first make move object
+
   /* final response2 = await http.post(
     Uri.parse('http://localhost:3000/updateBoard'),
     headers: <String, String>{
@@ -40,6 +40,8 @@ Future<String> fetchSHACLResults(
   if (response.statusCode == 200 && response2.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
+    SHACLResults results = SHACLResults.fromJson(jsonDecode(response2.body));
+    print(results.toString());
     String responsedata = response.body;
     print("here");
     print(responsedata);
