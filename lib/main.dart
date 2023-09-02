@@ -28,6 +28,21 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class AnalysisWidget extends StatelessWidget {
+  final String analysisInfo; // Pass the analysis information as a parameter
+
+  AnalysisWidget({required this.analysisInfo});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // Build the UI for analysis using analysisInfo
+      // You can use Text widgets, RichText, or any other widgets as needed
+      child: Text(analysisInfo),
+    );
+  }
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
@@ -39,6 +54,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _chess = chesslib.Chess.fromFEN(chesslib.Chess.DEFAULT_POSITION);
+  String analysisInfo = '';
 
   var _blackAtBottom = false;
   BoardArrow? _lastMoveArrowCoordinates;
@@ -215,6 +231,8 @@ class _MyHomePageState extends State<MyHomePage> {
               fen: currentFen,
               onMove: ({required ShortMove move}) {
                 print('${move.from}|${move.to}|${move.promotion}');
+                analysisInfo =
+                    "Move: ${move.from} to ${move.to}"; // Modify this with your actual analysis data
                 move_made(move: move);
                 // make floating button to validate move, board and last 3 moves
                 // if pressed: undo fake move, do real move with chesslib
@@ -243,6 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   icon: const Icon(Icons.refresh),
                 ),
               ),
+              AnalysisWidget(analysisInfo: analysisInfo),
             ],
           ))
         ],
