@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:simple_chess/my_chess.dart';
 import 'package:simple_chess_board/models/board_arrow.dart';
 import 'package:chess/chess.dart' as chesslib;
 import 'package:simple_chess_board/simple_chess_board.dart';
-import 'package:simple_chess/SHACL/apply_shacl.dart';
+import 'package:simple_chess/api.dart';
+import 'package:restart_app/restart_app.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Simple chess board Page'),
+      home: const MyHomePage(title: 'SHACL Chess Game'),
     );
   }
 }
@@ -65,9 +65,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void update_fen() {}
 
-  bool check_shacl(ShortMove move, String fen, chesslib.Piece? captured_piece) {
-    fetchSHACLResults(move, captured_piece);
+  Future<bool> check_shacl(
+      ShortMove move, chesslib.Piece? captured_piece) async {
+    await SHACL_move_validation(move, captured_piece);
     return true;
+  }
+
+  Future<bool> reset_remote() async {
+    await reset_board();
+    return true;
+  }
+
+  void reset_local() {
+    print("Reseting board locally...");
+    setState(() {
+      _chess.load(chesslib.Chess.DEFAULT_POSITION);
+      _chess.turn = chesslib.Chess.WHITE;
+      currentFen = _chess.fen;
+    });
+    reset_remote();
   }
 
   void change_turn() {
@@ -99,11 +115,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // now chess board has wrong fen
 
     // verify this fen and move in shacl
-    if (check_shacl(move, _chess.fen, captured)) {
-      print("shacl approves");
-    } else {
-      print("shacl disapproves");
-    }
+
+    //check_shacl(move, captured);
+
     // show move made regardless of shacl approval
     setState(() {
       currentFen = _chess.fen;
@@ -122,8 +136,10 @@ class _MyHomePageState extends State<MyHomePage> {
     if (success) {
       //change_turn();
       print("Valid move");
-
       setState(() {});
+      Future.delayed(const Duration(milliseconds: 5000), () {
+        //update_board(move);
+      });
     } else {
       print("invalid move");
       Future.delayed(const Duration(milliseconds: 5000), () {
@@ -214,16 +230,21 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Expanded(
-            child: FloatingActionButton.extended(
-              onPressed: () {
-                // Add your onPressed code here!#
-                //print(fetchSHACLResults());
-              },
-              label: const Text('Validate move'),
-              icon: const Icon(Icons.thumb_up),
-              backgroundColor: Colors.orange,
-            ),
-          ),
+              child: Column(
+            children: [
+              Center(
+                child: FloatingActionButton.extended(
+                  onPressed: () {
+                    print("reseting board...");
+                    reset_local();
+                    // Add your onPressed code here!
+                  },
+                  label: const Text('Reset board'),
+                  icon: const Icon(Icons.refresh),
+                ),
+              ),
+            ],
+          ))
         ],
       ),
     );

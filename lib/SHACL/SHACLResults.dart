@@ -1,21 +1,33 @@
 class SHACLResults {
-  final int TT;
-  final int CR;
-  final int TS;
-  final int boardStatus;
+  final bool conforms;
 
-  const SHACLResults({
-    required this.TT,
-    required this.TS,
-    required this.CR,
-    required this.boardStatus,
-  });
+  SHACLResults({required this.conforms});
 
   factory SHACLResults.fromJson(Map<String, dynamic> json) {
-    return SHACLResults(
-        TT: json['TT'],
-        CR: json['CR'],
-        TS: json['TS'],
-        boardStatus: json['boardStatus']);
+    if (json.containsKey('sh:conforms')) {
+      final conformsObj = json['sh:conforms'];
+      if (conformsObj is Map && conformsObj.containsKey('@value')) {
+        final conformsValue = conformsObj['@value'];
+        return SHACLResults(conforms: (conformsValue == 'true'));
+      }
+    } else if (json.containsKey('@graph')) {
+      final graph = json['@graph'];
+      if (graph is List) {
+        final validationResult = graph.firstWhere(
+          (item) => item['@type'] == 'sh:ValidationReport',
+          orElse: () => {},
+        );
+        if (validationResult.containsKey('sh:conforms')) {
+          final conformsObj = validationResult['sh:conforms'];
+          if (conformsObj is Map && conformsObj.containsKey('@value')) {
+            final conformsValue = conformsObj['@value'];
+            return SHACLResults(conforms: (conformsValue == 'true'));
+          }
+        }
+      }
+    }
+
+    // Return a default value or throw an exception if desired
+    return SHACLResults(conforms: false);
   }
 }

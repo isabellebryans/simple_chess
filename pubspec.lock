@@ -99,6 +99,11 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   fpdart:
     dependency: transitive
     description:
@@ -187,6 +192,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.0"
+  plugin_platform_interface:
+    dependency: transitive
+    description:
+      name: plugin_platform_interface
+      sha256: da3fdfeccc4d4ff2da8f8c556704c08f912542c5fb3cf2233ed75372384a034d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.6"
   provider:
     dependency: transitive
     description:
@@ -195,6 +208,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.5"
+  restart_app:
+    dependency: "direct main"
+    description:
+      name: restart_app
+      sha256: fed4f0756df1fd3a84dbb78fe35869f54ddb1e095604d5843bfc60b76e1398fd
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
   simple_chess_board:
     dependency: "direct main"
     description:
@@ -298,4 +319,4 @@ packages:
     version: "5.3.6"
 sdks:
   dart: ">=2.19.6 <3.0.0"
-  flutter: ">=1.17.0"
+  flutter: ">=2.5.0"
