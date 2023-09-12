@@ -132,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // verify this fen and move in shacl
 
-    //check_shacl(move, captured);
+    check_shacl(move, captured);
 
     // show move made regardless of shacl approval
     setState(() {
@@ -154,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
       print("Valid move");
       setState(() {});
       Future.delayed(const Duration(milliseconds: 5000), () {
-        //update_board(move);
+        update_board(move);
       });
     } else {
       print("invalid move");

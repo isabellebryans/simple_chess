@@ -6,6 +6,8 @@ import 'package:simple_chess/SHACL/SHACLResults.dart';
 import 'package:simple_chess_board/models/short_move.dart';
 import 'package:chess/chess.dart' as chesslib;
 
+String SHACL_results = "";
+
 Future<String> update_board(ShortMove move) async {
   final response = await http.post(
     Uri.parse('http://localhost:3000/updateBoard'),
@@ -79,6 +81,7 @@ Future<String> SHACL_move_validation(
     print(results.conforms);
     String responsedata = response.body;
     print("here");
+    SHACL_results = responsedata;
     print(responsedata);
     print(response.statusCode);
     print("after response 1 body");
